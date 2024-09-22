@@ -13,15 +13,22 @@ void get_URL( const string& host, const string& path )
   TCPSocket socket;
   Address addr(host, "80");
   socket.connect(addr);
-  std::string request = "GET "+path+"HTTP/1.1\r\nHost: "+host+"\r\nConnection: close\r\n\r\n";
+  std::string request = "GET "+path+" HTTP/1.1\r\nHost: "+host+"\r\nConnection: close\r\n\r\n";
   socket.write(request);
   std::string response;
-  std::vector<std::string> buffers;
-  socket.read(buffers);
-  for (const std::string& val : buffers) {
-    response.append(val);
+  while (1) {
+    socket.read(response);
+    if (response == "") break;
+    std::cout << response;
+    response = "";
   }
-  std::cout << response;
+  // for (const std::string& val : buffers) {
+  //   std::cout << val << endl;
+  //   response.append(val);
+  // }
+  // for (const std::string& res : responses) {
+  //   std::cout << res;
+  // } 
   // cerr << "Warning: get_URL() has not been implemented yet.\n";
 }
 
