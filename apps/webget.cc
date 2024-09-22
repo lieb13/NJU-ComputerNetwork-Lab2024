@@ -10,7 +10,19 @@ using namespace std;
 void get_URL( const string& host, const string& path )
 {
   cerr << "Function called: get_URL(" << host << ", " << path << ")\n";
-  cerr << "Warning: get_URL() has not been implemented yet.\n";
+  TCPSocket socket;
+  Address addr(host, "80");
+  socket.connect(addr);
+  std::string request = "GET "+path+"HTTP/1.1\r\nHost: "+host+"\r\nConnection: close\r\n\r\n";
+  socket.write(request);
+  std::string response;
+  std::vector<std::string> buffers;
+  socket.read(buffers);
+  for (const std::string& val : buffers) {
+    response.append(val);
+  }
+  std::cout << response;
+  // cerr << "Warning: get_URL() has not been implemented yet.\n";
 }
 
 int main( int argc, char* argv[] )
@@ -30,7 +42,7 @@ int main( int argc, char* argv[] )
       cerr << "\tExample: " << args.front() << " stanford.edu /class/cs144\n";
       return EXIT_FAILURE;
     }
-
+\
     // Get the command-line arguments.
     const string host { args[1] };
     const string path { args[2] };
