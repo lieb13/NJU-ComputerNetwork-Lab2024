@@ -37,9 +37,12 @@ public:
   Reader& reader() { return output_.reader(); }
   const Reader& reader() const { return output_.reader(); }
 
+  Writer& writer() { return output_.writer(); }
   // Access output stream writer, but const-only (can't write from outside)
   const Writer& writer() const { return output_.writer(); }
 
 private:
-  ByteStream output_; // the Reassembler writes to this ByteStream
+  ByteStream output_; // the Reassembler writSes to this ByteStream
+  std::vector<char> buffer_ {};
+  uint64_t pushed_ {}, inserted_ {};
 };
