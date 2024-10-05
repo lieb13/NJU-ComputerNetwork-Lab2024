@@ -11,14 +11,15 @@ void get_URL( const string& host, const string& path )
 {
   cerr << "Function called: get_URL(" << host << ", " << path << ")\n";
   TCPSocket socket;
-  Address addr(host, "80");
-  socket.connect(addr);
-  std::string request = "GET "+path+" HTTP/1.1\r\nHost: "+host+"\r\nConnection: close\r\n\r\n";
-  socket.write(request);
+  Address addr( host, "80" );
+  socket.connect( addr );
+  std::string request = "GET " + path + " HTTP/1.1\r\nHost: " + host + "\r\nConnection: close\r\n\r\n";
+  socket.write( request );
   std::string response;
-  while (1) {
-    socket.read(response);
-    if (response == "") break;
+  while ( 1 ) {
+    socket.read( response );
+    if ( response == "" )
+      break;
     std::cout << response;
     response = "";
   }
@@ -28,7 +29,7 @@ void get_URL( const string& host, const string& path )
   // }
   // for (const std::string& res : responses) {
   //   std::cout << res;
-  // } 
+  // }
   // cerr << "Warning: get_URL() has not been implemented yet.\n";
 }
 
@@ -49,7 +50,7 @@ int main( int argc, char* argv[] )
       cerr << "\tExample: " << args.front() << " stanford.edu /class/cs144\n";
       return EXIT_FAILURE;
     }
-\
+
     // Get the command-line arguments.
     const string host { args[1] };
     const string path { args[2] };

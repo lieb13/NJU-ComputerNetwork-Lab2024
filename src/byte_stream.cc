@@ -13,9 +13,9 @@ void Writer::push( string data )
 {
   // Your code here.
   // (void)data;
-  int len = min(data.length(), capacity_ - pushed_ + popped_);
+  int len = min( data.length(), capacity_ - pushed_ + popped_ );
   pushed_ += len;
-  buffer_.insert(buffer_.end(), data.begin(), data.begin() + len);
+  buffer_.insert( buffer_.end(), data.begin(), data.begin() + len );
   return;
 }
 
@@ -36,7 +36,7 @@ uint64_t Writer::bytes_pushed() const
 
 bool Reader::is_finished() const
 {
-  return closed_ && (pushed_ == popped_);
+  return closed_ && ( pushed_ == popped_ );
 }
 
 uint64_t Reader::bytes_popped() const
@@ -46,14 +46,14 @@ uint64_t Reader::bytes_popped() const
 
 string_view Reader::peek() const
 {
-  return std::string_view(buffer_.data() + popped_, pushed_ - popped_);
+  return std::string_view( buffer_.data() + popped_, pushed_ - popped_ );
 }
 
 void Reader::pop( uint64_t len )
 {
   // Your code here.
   // (void)len;
-  popped_ += min(len, pushed_ - popped_);
+  popped_ += min( len, pushed_ - popped_ );
 }
 
 uint64_t Reader::bytes_buffered() const

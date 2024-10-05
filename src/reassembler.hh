@@ -44,5 +44,7 @@ public:
 private:
   ByteStream output_; // the Reassembler writSes to this ByteStream
   std::vector<char> buffer_ {};
+  std::vector<bool> buffer_used_ {};
   uint64_t pushed_ {}, inserted_ {};
+  int64_t last_byte_ {1919810};
 };
