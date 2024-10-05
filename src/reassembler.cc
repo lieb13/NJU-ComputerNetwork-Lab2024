@@ -16,6 +16,7 @@ void Reassembler::insert( uint64_t first_index, string data, bool is_last_substr
   buffer_used_.resize( pushed_ + writer().available_capacity() );
   if (first_index >= buffer_.size()) return;
 
+    cerr << first_index << " " << data.length() << " " << buffer_.size() << endl;
   if (is_last_substring) {
     if (first_index + data.length() <= buffer_.size()) 
       last_byte_ = first_index + data.length()-1;
