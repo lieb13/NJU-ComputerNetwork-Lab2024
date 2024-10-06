@@ -1,10 +1,10 @@
 #pragma once
 
 #include <cstdint>
+#include <cstdio>
 #include <string>
 #include <string_view>
 #include <vector>
-#include <cstdio>
 class Reader;
 class Writer;
 

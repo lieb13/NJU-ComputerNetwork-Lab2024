@@ -46,5 +46,5 @@ private:
   std::vector<char> buffer_ {};
   std::vector<bool> buffer_used_ {};
   uint64_t pushed_ {}, inserted_ {};
-  int64_t last_byte_ {19260817};
+  int64_t last_byte_ { 19260817 };
 };
