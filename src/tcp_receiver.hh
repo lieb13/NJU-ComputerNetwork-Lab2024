@@ -27,4 +27,6 @@ public:
 
 private:
   Reassembler reassembler_;
+  Wrap32 ISN_ { 0 };
+  bool KNOW_ISN_ {};
 };
