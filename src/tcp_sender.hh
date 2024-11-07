@@ -10,6 +10,7 @@
 #include <memory>
 #include <optional>
 #include <queue>
+#include <iostream>
 
 class TCPSender
 {
@@ -49,8 +50,8 @@ private:
   Wrap32 isn_;
   bool set_SYN_ {}, set_FIN_ {};
   uint64_t initial_RTO_ms_, RTO_ {};
-  uint64_t timer_ {}; bool timer_run_ {};
-  uint64_t consecutive_retransmissions_cnt_ {};
-  uint16_t window_size_ { 1 };
+  uint64_t timer_ {}; bool timer_running_ {};
+  uint64_t consecutive_rt_ {}, seqno_flight_ {};
+  uint64_t window_size_ { 1 }, read_size_ { 1 };
   std::queue<TCPSenderMessage> outstanding_ {};
 };
