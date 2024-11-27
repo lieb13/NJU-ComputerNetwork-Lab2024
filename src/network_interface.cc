@@ -30,6 +30,39 @@ void NetworkInterface::send_datagram( const InternetDatagram& dgram, const Addre
   // Your code here.
   (void)dgram;
   (void)next_hop;
+  EthernetFrame msg;
+  if (IP_Ethernet_map_.find(next_hop) != IP_Ethernet_map_.end()) {
+    msg.header.type = EthernetHeader::TYPE_IPv4;
+    msg.header.dst = IP_Ethernet_map_[next_hop].first;
+    msg.header.src = ethernet_address_;
+    msg.payload = serialize(dgram);
+    transmit(msg);
+  }
+  else {
+    msg.header.type = EthernetHeader::TYPE_ARP;
+    msg.header.dst = ETHERNET_BROADCAST;
+    msg.header.src = ethernet_address_;
+
+    ARPMessage request;
+    request.opcode = ARPMessage::OPCODE_REQUEST;
+    request.sender_ip_address = ip_address_.ipv4_numeric();
+    request.sender_ethernet_address = ethernet_address_;
+    request.target_ip_address = next_hop.ipv4_numeric();
+    msg.payload = serialize(request);
+
+    if (ethernet_address_waitlist_.find(next_hop) == ethernet_address_waitlist_.end()) {
+      ethernet_address_waitlist_[next_hop] = {};
+    }
+    ethernet_address_waitlist_[next_hop].push_back(dgram);
+
+    if (request_flood_.find(next_hop) != request_flood_.end()) {
+      if (timer_ - request_flood_[next_hop] <= 5 * 1000) 
+        return;
+    }
+
+    transmit(msg);
+    request_flood_[next_hop] = timer_;
+  }
 }
 
 //! \param[in] frame the incoming Ethernet frame
@@ -37,6 +70,58 @@ void NetworkInterface::recv_frame( const EthernetFrame& frame )
 {
   // Your code here.
   (void)frame;
+  // only recieve broadcast or message toward this
+  if (frame.header.dst != ETHERNET_BROADCAST && frame.header.dst != ethernet_address_) {
+    return;
+  }
+  if (frame.header.type == EthernetHeader::TYPE_IPv4) {
+    InternetDatagram dgram;
+    if (parse(dgram, frame.payload)) {
+      datagrams_received_.push(dgram);
+    }
+  }
+  else if (frame.header.type == EthernetHeader::TYPE_ARP) {
+    ARPMessage amsg;
+    if (parse(amsg, frame.payload)) {
+      
+      //try to send dgrams not send
+      Address address = Address::from_ipv4_numeric(amsg.sender_ip_address);
+      if (ethernet_address_waitlist_.find(address) != ethernet_address_waitlist_.end()) {
+        for (const auto& dgram : ethernet_address_waitlist_[address]) {
+          EthernetFrame msg;
+          msg.header.type = EthernetHeader::TYPE_IPv4;
+          msg.header.dst = amsg.sender_ethernet_address;
+          msg.header.src = ethernet_address_;
+          msg.payload = serialize(dgram);
+          transmit(msg);
+        }
+        ethernet_address_waitlist_[address].clear();
+      }
+
+      // remember IP_Ethernet mapping for 30s
+      IP_Ethernet_map_[address] = make_pair(amsg.sender_ethernet_address, timer_);
+
+      // reply to ARP request
+      if (amsg.opcode == ARPMessage::OPCODE_REQUEST && \
+            amsg.target_ip_address == ip_address_.ipv4_numeric()) {
+        EthernetFrame msg;
+        msg.header.src = ethernet_address_;
+        msg.header.dst = amsg.sender_ethernet_address;
+        ARPMessage reply;
+        reply.opcode = ARPMessage::OPCODE_REPLY;
+        reply.sender_ip_address = ip_address_.ipv4_numeric();
+        reply.sender_ethernet_address = ethernet_address_;
+        reply.target_ip_address = amsg.sender_ip_address;
+        reply.target_ethernet_address = amsg.target_ethernet_address;
+        msg.payload = serialize(reply);
+        transmit(msg);
+      }
+    }
+  }
+  else {
+    return;
+  }
+  
 }
 
 //! \param[in] ms_since_last_tick the number of milliseconds since the last call to this method
@@ -44,4 +129,13 @@ void NetworkInterface::tick( const size_t ms_since_last_tick )
 {
   // Your code here.
   (void)ms_since_last_tick;
+  timer_ += ms_since_last_tick;
+
+  // expire IP-Ethernet mappings
+  for (const auto& mapp : IP_Ethernet_map_) {
+    size_t time = mapp.second.second;
+    if (timer_ - time > 30 * 1000) {
+      IP_Ethernet_map_.erase(mapp.first);
+    }
+  }
 }
