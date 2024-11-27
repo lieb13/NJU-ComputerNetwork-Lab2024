@@ -1,7 +1,7 @@
 #pragma once
 
-#include <queue>
 #include <map>
+#include <queue>
 
 #include "address.hh"
 #include "ethernet_frame.hh"
@@ -85,9 +85,10 @@ private:
 
   size_t timer_ {};
 
-  //Address -> EthernetAddress mapping , size_t is time 
-  std::map<Address, pair<EthernetAddress, size_t>> IP_Ethernet_map_ {};
+  // Address -> EthernetAddress mapping , size_t is time
+  std::map<uint32_t, std::pair<EthernetAddress, size_t>> IP_Ethernet_map_ {};
 
-  std::map<Address, size_t> request_flood_;
+  std::map<uint32_t, size_t> request_flood_ {};
 
+  std::map<uint32_t, std::vector<InternetDatagram>> ethernet_address_waitlist_ {};
 };
