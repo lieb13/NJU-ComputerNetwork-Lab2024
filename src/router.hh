@@ -12,6 +12,17 @@
 class Router
 {
 public:
+  struct RouteInfo
+  {
+    uint32_t prefix;
+    uint8_t prefix_len;
+    std::optional<Address> next_hop;
+    size_t interface_num;
+
+    RouteInfo(uint32_t pre, uint8_t pre_len, std::optional<Address> n, size_t in_num) : prefix(pre), prefix_len(pre_len), next_hop(n), interface_num(in_num) {}
+
+    RouteInfo() : prefix(0), prefix_len(0), next_hop( std::nullopt ), interface_num(0) {}
+  };
   // Add an interface to the router
   // \param[in] interface an already-constructed network interface
   // \returns The index of the interface after it has been added to the router
@@ -41,17 +52,3 @@ private:
 
 };
 
-
-struct RouteInfo
-{
-  uint32_t prefix;
-  uint8_t prefix_len;
-  optional<Address> next_hop;
-  size_t interface_num;
-
-  RouteInfo(uint32_t pre, uint8_t pre_len, optional<Address> n, size_t in_num) : \
-    prefix(pre), prefix_len(pre_len), next_hop(n), interface_num(in_num) {}
-
-  RouteInfo() : \
-    prefix(0), prefix_len(0), next_hop( (optional<Address>)nullptr ), interface_num(-1) {}
-};
