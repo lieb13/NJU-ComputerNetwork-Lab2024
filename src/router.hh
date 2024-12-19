@@ -8,6 +8,7 @@
 
 // \brief A router that has multiple network interfaces and
 // performs longest-prefix-match routing between them.
+
 class Router
 {
 public:
@@ -35,4 +36,22 @@ public:
 private:
   // The router's collection of network interfaces
   std::vector<std::shared_ptr<NetworkInterface>> _interfaces {};
+
+  std::vector<RouteInfo> _routes {};
+
+};
+
+
+struct RouteInfo
+{
+  uint32_t prefix;
+  uint8_t prefix_len;
+  optional<Address> next_hop;
+  size_t interface_num;
+
+  RouteInfo(uint32_t pre, uint8_t pre_len, optional<Address> n, size_t in_num) : \
+    prefix(pre), prefix_len(pre_len), next_hop(n), interface_num(in_num) {}
+
+  RouteInfo() : \
+    prefix(0), prefix_len(0), next_hop( (optional<Address>)nullptr ), interface_num(-1) {}
 };
