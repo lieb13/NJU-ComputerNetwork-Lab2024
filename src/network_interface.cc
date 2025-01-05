@@ -129,10 +129,14 @@ void NetworkInterface::tick( const size_t ms_since_last_tick )
   timer_ += ms_since_last_tick;
 
   // expire IP-Ethernet mappings
-  for ( const auto& mapp : IP_Ethernet_map_ ) {
-    size_t time = mapp.second.second;
+  for (auto it = IP_Ethernet_map_.begin(); it != IP_Ethernet_map_.end(); ) {
+    size_t time = it->second.second;
+    // cerr << timer_ << " " << time << endl;
     if ( timer_ - time > 30 * 1000 ) {
-      IP_Ethernet_map_.erase( mapp.first );
+      it = IP_Ethernet_map_.erase( it );
+    }
+    else {
+      it++;
     }
   }
 }

@@ -33,7 +33,7 @@ void TCPSender::push( const TransmitFunction& transmit )
     uint64_t len = min( read_size_, TCPConfig::MAX_PAYLOAD_SIZE );
     read( input_.reader(), len, msg.payload );
     read_size_ -= msg.payload.length();
-    std::cerr << reader().is_finished() << " " << read_size_ << " " << set_FIN_ << endl;
+    // std::cerr << reader().is_finished() << " " << read_size_ << " " << set_FIN_ << endl;
     if ( reader().is_finished() && read_size_ > 0 && !set_FIN_ ) {
       msg.FIN = 1;
       set_FIN_ = true;

@@ -25,8 +25,8 @@ void Router::add_route( const uint32_t route_prefix,
 
 inline bool match(uint32_t prefix, uint8_t prefix_length, uint32_t dst) {
   bool ret = (prefix_length == 0) ? true : ((prefix >> (32 - prefix_length)) ^ (dst >> (32 -prefix_length))) == 0; 
-  cerr << "MATCH: " << Address::from_ipv4_numeric(prefix).to_string() << "/" << (uint32_t)prefix_length << " with " << 
-  Address::from_ipv4_numeric(dst).to_string() << " is " << ret << endl; 
+  // cerr << "MATCH: " << Address::from_ipv4_numeric(prefix).to_string() << "/" << (uint32_t)prefix_length << " with " << 
+  // Address::from_ipv4_numeric(dst).to_string() << " is " << ret << endl; 
   return ret;
 
 }
